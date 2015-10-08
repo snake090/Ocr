@@ -25,9 +25,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.android.*;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 
 public class MainActivity extends Activity {
@@ -50,6 +56,8 @@ public class MainActivity extends Activity {
 
     protected static final String PHOTO_TAKEN = "photo_taken";
 
+    private ImageView iv;
+    private ImageView iv1;
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -209,15 +217,24 @@ public class MainActivity extends Activity {
         }
 
         // _image.setImageBitmap( bitmap );
-
+/*
         Log.v(TAG, "Before baseApi");
+        iv = (ImageView) findViewById(R.id.imageView);
+        iv.setImageBitmap(bitmap);
+        Mat tmp = new Mat (bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC1);
+        Utils.bitmapToMat(bitmap, tmp);
+        Imgproc.cvtColor(tmp, tmp, Imgproc.COLOR_RGB2GRAY);
+        Utils.matToBitmap(tmp, bitmap);
 
+        iv1 = (ImageView) findViewById(R.id.imageView1);
+        iv1.setImageBitmap(bitmap);
 
-
+*/
         TessBaseAPI baseApi = new TessBaseAPI();
         baseApi.setDebug(true);
         baseApi.init(DATA_PATH, lang);
         baseApi.setImage(bitmap);
+
 
         String recognizedText = baseApi.getUTF8Text();
 
