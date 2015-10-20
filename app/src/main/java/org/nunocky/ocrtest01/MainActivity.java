@@ -1,32 +1,34 @@
 package org.nunocky.ocrtest01;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.zip.GZIPInputStream;
-
+//import java.util.logging.Handler;
 import android.app.Activity;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import android.app.ProgressDialog;
+import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Message;
+import android.os.Handler;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -34,35 +36,29 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.utils.Converters;
 
-public class MainActivity extends Activity {
+
+public class MainActivity extends Activity implements android.os.Handler.Callback {
     static {
         if (!OpenCVLoader.initDebug()) {
             Log.d("TAG", "Filed OpenCVLoader.initDebug()");
         }
     }
+
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                {
+                case LoaderCallbackInterface.SUCCESS: {
                     Log.i(TAG, "OpenCV loaded successfully");
-                } break;
-                default:
-                {
+                }
+                break;
+                default: {
                     super.onManagerConnected(status);
-                } break;
+                }
+                break;
             }
         }
     };
@@ -82,11 +78,16 @@ public class MainActivity extends Activity {
     protected EditText _field;
     protected String _path;
     protected boolean _taken;
+    protected Bitmap bitmap;
 
     protected static final String PHOTO_TAKEN = "photo_taken";
 
     private ImageView iv;
     private ImageView iv1;
+
+    private ProgressDialog progressDialog;
+    private Thread thread;
+    private Handler handler;
 
 
     @Override
@@ -145,20 +146,24 @@ public class MainActivity extends Activity {
         _field = (EditText) findViewById(R.id.field);
         _button = (Button) findViewById(R.id.button);
         _button.setOnClickListener(new ButtonClickHandler());
-        iv1=(ImageView)findViewById(R.id.imageView1);
+        iv1 = (ImageView) findViewById(R.id.imageView1);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("loading");
 
         _path = DATA_PATH + "/ocr.jpg";
+
+
     }
+
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
 
-            Log.d(TAG, "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        Log.d(TAG, "OpenCV library found inside package. Using it!");
+        mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
 
     }
-
 
     public class ButtonClickHandler implements View.OnClickListener {
         public void onClick(View view) {
@@ -182,7 +187,6 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         Log.i(TAG, "resultCode: " + resultCode);
 
         if (resultCode == -1) {
@@ -205,102 +209,116 @@ public class MainActivity extends Activity {
         }
     }
 
-    protected void onPhotoTaken() {
-        _taken = true;
+    @Override
+    public boolean handleMessage(Message msg) {
+        if (msg.obj.toString().length() != 0) {
+             _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
+             _field.setSelection(_field.getText().toString().length());
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 4;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(_path, options);
-
-
-        try {
-            ExifInterface exif = new ExifInterface(_path);
-            int exifOrientation = exif.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL);
-
-            Log.v(TAG, "Orient: " + exifOrientation);
-
-            int rotate = 0;
-
-            switch (exifOrientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    rotate = 90;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotate = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotate = 270;
-                    break;
-            }
-
-            Log.v(TAG, "Rotation: " + rotate);
-
-            if (rotate != 0) {
-
-                // Getting width & height of the given image.
-                int w = bitmap.getWidth();
-                int h = bitmap.getHeight();
-
-                // Setting pre rotate
-                Matrix mtx = new Matrix();
-                mtx.preRotate(rotate);
-
-                // Rotating Bitmap
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
-            }
-
-            // Convert to ARGB_8888, required by tess
-            bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-
-        } catch (IOException e) {
-            Log.e(TAG, "Couldn't correct orientation: " + e.toString());
         }
-
-        // _image.setImageBitmap( bitmap );
-        Mat mat =new Mat();
-        Utils.bitmapToMat(bitmap,mat);
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY);
-        Imgproc.threshold(mat, mat, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2BGRA, 4);
-        Utils.matToBitmap(mat, bitmap);
-
         iv1.setImageBitmap(bitmap);
+        return false;
 
-        TessBaseAPI baseApi = new TessBaseAPI();
-        baseApi.setDebug(true);
-        baseApi.init(DATA_PATH, lang);
-        baseApi.setImage(bitmap);
-
-        String recognizedText = baseApi.getUTF8Text();
-
-        baseApi.end();
-
-        // You now have the text in recognizedText var, you can do anything with it.
-        // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
-        // so that garbage doesn't make it to the display.
-
-        Log.v(TAG, "OCRED TEXT: " + recognizedText);
-
-        if (lang.equalsIgnoreCase("eng")) {
-            recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
-        }
-
-        recognizedText = recognizedText.trim();
-
-        if (recognizedText.length() != 0) {
-            _field.setText(_field.getText().toString().length() == 0 ? recognizedText : _field.getText() + " " + recognizedText);
-            _field.setSelection(_field.getText().toString().length());
-        }
-
-        // Cycle done.
     }
 
-    // www.Gaut.am was here
-    // Thanks for reading!
+    protected void onPhotoTaken() {
+        _taken = true;
+        handler = new Handler(MainActivity.this);
 
+        progressDialog.show();
+       new Thread(new Runnable(){
+           public void run(){
+               BitmapFactory.Options options = new BitmapFactory.Options();
+               options.inSampleSize = 4;
+
+               bitmap = BitmapFactory.decodeFile(_path, options);
+
+
+               try {
+                   ExifInterface exif = new ExifInterface(_path);
+                   int exifOrientation = exif.getAttributeInt(
+                           ExifInterface.TAG_ORIENTATION,
+                           ExifInterface.ORIENTATION_NORMAL);
+
+                   Log.v(TAG, "Orient: " + exifOrientation);
+
+                   int rotate = 0;
+
+                   switch (exifOrientation) {
+                       case ExifInterface.ORIENTATION_ROTATE_90:
+                           rotate = 90;
+                           break;
+                       case ExifInterface.ORIENTATION_ROTATE_180:
+                           rotate = 180;
+                           break;
+                       case ExifInterface.ORIENTATION_ROTATE_270:
+                           rotate = 270;
+                           break;
+                   }
+
+                   Log.v(TAG, "Rotation: " + rotate);
+
+                   if (rotate != 0) {
+
+                       // Getting width & height of the given image.
+                       int w = bitmap.getWidth();
+                       int h = bitmap.getHeight();
+
+                       // Setting pre rotate
+                       Matrix mtx = new Matrix();
+                       mtx.preRotate(rotate);
+
+                       // Rotating Bitmap
+                       bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
+                   }
+
+                   // Convert to ARGB_8888, required by tess
+                   bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+               } catch (IOException e) {
+                   Log.e(TAG, "Couldn't correct orientation: " + e.toString());
+               }
+
+               // _image.setImageBitmap( bitmap );
+               OpencvUtil opencvUtil=new OpencvUtil();
+
+               bitmap=opencvUtil.Imageprocessing(bitmap);
+
+               TessBaseAPI baseApi = new TessBaseAPI();
+               baseApi.setDebug(true);
+               baseApi.init(DATA_PATH, lang);
+               baseApi.setImage(bitmap);
+
+               String recognizedText = baseApi.getUTF8Text();
+
+               baseApi.end();
+
+               // You now have the text in recognizedText var, you can do anything with it.
+               // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
+               // so that garbage doesn't make it to the display.
+
+               Log.v(TAG, "OCRED TEXT: " + recognizedText);
+
+               if (lang.equalsIgnoreCase("eng")) {
+                   recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
+               }
+
+               recognizedText = recognizedText.trim();
+/*
+               if (recognizedText.length() != 0) {
+                   _field.setText(_field.getText().toString().length() == 0 ? recognizedText : _field.getText() + " " + recognizedText);
+                   _field.setSelection(_field.getText().toString().length());
+               }
+               */
+               Message msg = new Message();
+               msg.obj=recognizedText;
+               handler.sendMessage(msg);
+               progressDialog.dismiss();
+           }
+       }).start();
+
+
+    }
 
 
 }
