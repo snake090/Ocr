@@ -212,8 +212,8 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
     @Override
     public boolean handleMessage(Message msg) {
         if (msg.obj.toString().length() != 0) {
-             _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
-             _field.setSelection(_field.getText().toString().length());
+            // _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
+            // _field.setSelection(_field.getText().toString().length());
 
         }
         iv1.setImageBitmap(bitmap);
@@ -283,6 +283,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                OpencvUtil opencvUtil=new OpencvUtil();
 
                bitmap=opencvUtil.Imageprocessing(bitmap);
+               Log.v(TAG, "TessBaseAPI");
 
                TessBaseAPI baseApi = new TessBaseAPI();
                baseApi.setDebug(true);
@@ -292,6 +293,9 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                String recognizedText = baseApi.getUTF8Text();
 
                baseApi.end();
+
+               Log.v(TAG, "TessBaseAPIEnd");
+             // String recognizedText="test";
 
                // You now have the text in recognizedText var, you can do anything with it.
                // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
