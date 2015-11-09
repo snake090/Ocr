@@ -20,6 +20,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,6 +31,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Message;
 import android.os.Handler;
+import android.widget.Spinner;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -70,7 +73,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
     // You should have the trained data file in assets folder
     // You can get them at:
     // http://code.google.com/p/tesseract-ocr/downloads/list
-    public static final String lang = "jpn";
+    public String lang = "eng";
 
     private static final String TAG = "AndroidOCR.java";
 
@@ -88,7 +91,8 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
     private ProgressDialog progressDialog;
     private Thread thread;
     private Handler handler;
-
+    private Spinner selectSpinner;
+    private TakeOverInfo takeOverInfo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,6 +117,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         // You can get them at:
         // http://code.google.com/p/tesseract-ocr/downloads/list
         // This area needs work and optimization
+        /*
         if (!(new File(DATA_PATH + "tessdata/" + lang + ".traineddata")).exists()) {
             try {
 
@@ -138,6 +143,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                 Log.e(TAG, "Was unable to copy " + lang + " traineddata " + e.toString());
             }
         }
+        */
 
 
         setContentView(R.layout.activity_main);
@@ -152,7 +158,55 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         progressDialog.setMessage("loading");
 
         _path = DATA_PATH + "/ocr.jpg";
+        takeOverInfo = new TakeOverInfo();
 
+
+        ArrayAdapter<CharSequence> adapter2 =
+                ArrayAdapter.createFromResource(this, R.array.sample_array2,
+                        android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        selectSpinner = (Spinner) findViewById(R.id.spinner2);
+        selectSpinner.setAdapter(adapter2);
+        selectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Spinner spinner = (Spinner) parent;
+                if (spinner.getSelectedItemPosition() == 0) {
+                    takeOverInfo.setKind(true);
+                    lang = "eng";
+                } else {
+                    takeOverInfo.setKind(false);
+                    lang = "jpn";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        ArrayAdapter<CharSequence> adapter =
+                ArrayAdapter.createFromResource(this, R.array.sample_array,
+                        android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        selectSpinner = (Spinner) findViewById(R.id.spinner);
+        selectSpinner.setAdapter(adapter);
+        selectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Spinner spinner = (Spinner) parent;
+                if (spinner.getSelectedItemPosition() == 0) {
+                    takeOverInfo.setFunction(true);
+                } else {
+                    takeOverInfo.setFunction(false);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
     }
 
@@ -167,6 +221,30 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
     public class ButtonClickHandler implements View.OnClickListener {
         public void onClick(View view) {
+            if (!(new File(DATA_PATH + "tessdata/" + lang + ".traineddata")).exists()) {
+                try {
+                    AssetManager assetManager = getAssets();
+                    InputStream in = assetManager.open("tessdata/" + lang + ".traineddata");
+                    //GZIPInputStream gin = new GZIPInputStream(in);
+                    OutputStream out = new FileOutputStream(DATA_PATH
+                            + "tessdata/" + lang + ".traineddata");
+
+                    // Transfer bytes from in to out
+                    byte[] buf = new byte[1024];
+                    int len;
+                    //while ((lenf = gin.read(buff)) > 0) {
+                    while ((len = in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+                    in.close();
+                    //gin.close();
+                    out.close();
+
+                    Log.v(TAG, "Copied " + lang + " traineddata");
+                } catch (IOException e) {
+                    Log.e(TAG, "Was unable to copy " + lang + " traineddata " + e.toString());
+                }
+            }
             Log.v(TAG, "Starting Camera app");
             startCameraActivity();
         }
@@ -214,8 +292,8 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
 
         if (msg.obj.toString().length() != 0) {
-           // _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
-       //  _field.setSelection(_field.getText().toString().length());
+            // _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
+            //  _field.setSelection(_field.getText().toString().length());
         }
         iv1.setImageBitmap(bitmap);
 
@@ -228,64 +306,64 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         handler = new Handler(MainActivity.this);
 
         progressDialog.show();
-       new Thread(new Runnable(){
-           public void run(){
-               BitmapFactory.Options options = new BitmapFactory.Options();
-               options.inSampleSize = 4;
+        new Thread(new Runnable() {
+            public void run() {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 4;
 
-               bitmap = BitmapFactory.decodeFile(_path, options);
+                bitmap = BitmapFactory.decodeFile(_path, options);
 
 
-               try {
-                   ExifInterface exif = new ExifInterface(_path);
-                   int exifOrientation = exif.getAttributeInt(
-                           ExifInterface.TAG_ORIENTATION,
-                           ExifInterface.ORIENTATION_NORMAL);
+                try {
+                    ExifInterface exif = new ExifInterface(_path);
+                    int exifOrientation = exif.getAttributeInt(
+                            ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_NORMAL);
 
-                   Log.v(TAG, "Orient: " + exifOrientation);
+                    Log.v(TAG, "Orient: " + exifOrientation);
 
-                   int rotate = 0;
+                    int rotate = 0;
 
-                   switch (exifOrientation) {
-                       case ExifInterface.ORIENTATION_ROTATE_90:
-                           rotate = 90;
-                           break;
-                       case ExifInterface.ORIENTATION_ROTATE_180:
-                           rotate = 180;
-                           break;
-                       case ExifInterface.ORIENTATION_ROTATE_270:
-                           rotate = 270;
-                           break;
-                   }
+                    switch (exifOrientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            rotate = 90;
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            rotate = 180;
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            rotate = 270;
+                            break;
+                    }
 
-                   Log.v(TAG, "Rotation: " + rotate);
+                    Log.v(TAG, "Rotation: " + rotate);
 
-                   if (rotate != 0) {
+                    if (rotate != 0) {
 
-                       // Getting width & height of the given image.
-                       int w = bitmap.getWidth();
-                       int h = bitmap.getHeight();
+                        // Getting width & height of the given image.
+                        int w = bitmap.getWidth();
+                        int h = bitmap.getHeight();
 
-                       // Setting pre rotate
-                       Matrix mtx = new Matrix();
-                       mtx.preRotate(rotate);
+                        // Setting pre rotate
+                        Matrix mtx = new Matrix();
+                        mtx.preRotate(rotate);
 
-                       // Rotating Bitmap
-                       bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
-                   }
+                        // Rotating Bitmap
+                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
+                    }
 
-                   // Convert to ARGB_8888, required by tess
-                   bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                    // Convert to ARGB_8888, required by tess
+                    bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
 
-               } catch (IOException e) {
-                   Log.e(TAG, "Couldn't correct orientation: " + e.toString());
-               }
+                } catch (IOException e) {
+                    Log.e(TAG, "Couldn't correct orientation: " + e.toString());
+                }
 
-               // _image.setImageBitmap( bitmap );
-               OpencvUtil opencvUtil=new OpencvUtil();
+                // _image.setImageBitmap( bitmap );
+                OpencvUtil opencvUtil = new OpencvUtil();
 
-               bitmap=opencvUtil.Imageprocessing(bitmap);
-               Log.v(TAG, "TessBaseAPI");
+                bitmap = opencvUtil.Imageprocessing(bitmap);
+                Log.v(TAG, "TessBaseAPI");
 /*
                TessBaseAPI baseApi = new TessBaseAPI();
                baseApi.setDebug(true);
@@ -296,34 +374,39 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
                baseApi.end();
 */
-               Log.v(TAG, "TessBaseAPIEnd");
-               String recognizedText="test";
+                Log.v(TAG, "TessBaseAPIEnd");
+                String recognizedText = "test";
 
-               // You now have the text in recognizedText var, you can do anything with it.
-               // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
-               // so that garbage doesn't make it to the display.
+                // You now have the text in recognizedText var, you can do anything with it.
+                // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
+                // so that garbage doesn't make it to the display.
 
-               Log.v(TAG, "OCRED TEXT: " + recognizedText);
+                Log.v(TAG, "OCRED TEXT: " + recognizedText);
 
-               if (lang.equalsIgnoreCase("eng")) {
-                   recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
-               }
+                if (lang.equalsIgnoreCase("eng")) {
+                    recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
+                }
 
-               recognizedText = recognizedText.trim();
+                recognizedText = recognizedText.trim();
 /*
                Message msg = new Message();
                msg.obj=recognizedText;
                handler.sendMessage(msg);
                progressDialog.dismiss();
   */
-               TakeOverInfo takeOverInfo=new TakeOverInfo();
-               takeOverInfo.setMozi(recognizedText);
-               takeOverInfo.setBitmap(bitmap);
-               Intent intent=new Intent(MainActivity.this,Main2Activity.class);
-               intent.putExtra("key", takeOverInfo);
-               startActivity(intent);
-           }
-       }).start();
+
+                takeOverInfo.setMozi(recognizedText);
+                takeOverInfo.setBitmap(bitmap);
+                Intent intent;
+                if(takeOverInfo.isFunction()) {
+                    intent = new Intent(MainActivity.this, Main3Activity.class);
+                }else{
+                    intent = new Intent(MainActivity.this, Main2Activity.class);
+                }
+                intent.putExtra("key", takeOverInfo);
+                startActivity(intent);
+            }
+        }).start();
 
     }
 

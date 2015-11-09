@@ -30,7 +30,7 @@ public class TranslateResult extends AsyncTask<Void,Void,String> {
             if(dictionaryConfiguration.isKind()) {
                 result = Translate.execute(dictionaryConfiguration.getWord(), Language.ENGLISH, Language.JAPANESE);
             }else{
-
+                result = Translate.execute(dictionaryConfiguration.getWord(), Language.JAPANESE,Language.ENGLISH);
             }
         } catch (Exception e) {
             e.printStackTrace();
