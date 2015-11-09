@@ -32,6 +32,9 @@ public class OpencvUtil {
         Imgproc.threshold(mat1, mat2, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
         //ノイズ除去 メディアンフィルタ
         Imgproc.medianBlur(mat2, mat2, 3);
+
+
+
         Core.bitwise_not(mat2, mat2);
         Imgproc.cvtColor(mat2, mat2, Imgproc.COLOR_GRAY2BGRA, 4);
 

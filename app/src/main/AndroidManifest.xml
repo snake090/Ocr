@@ -3,7 +3,7 @@
     package="org.nunocky.ocrtest01" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.owner.ocrtest.Main2Activity"
+            android:name="Main2Activity"
             android:label="@string/title_activity_main2" >
         </activity>
     </application>

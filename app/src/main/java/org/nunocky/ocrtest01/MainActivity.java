@@ -211,12 +211,14 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
     @Override
     public boolean handleMessage(Message msg) {
-        if (msg.obj.toString().length() != 0) {
-            // _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
-            // _field.setSelection(_field.getText().toString().length());
 
+
+        if (msg.obj.toString().length() != 0) {
+           // _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
+       //  _field.setSelection(_field.getText().toString().length());
         }
         iv1.setImageBitmap(bitmap);
+
         return false;
 
     }
@@ -284,7 +286,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
                bitmap=opencvUtil.Imageprocessing(bitmap);
                Log.v(TAG, "TessBaseAPI");
-
+/*
                TessBaseAPI baseApi = new TessBaseAPI();
                baseApi.setDebug(true);
                baseApi.init(DATA_PATH, lang);
@@ -293,9 +295,9 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                String recognizedText = baseApi.getUTF8Text();
 
                baseApi.end();
-
+*/
                Log.v(TAG, "TessBaseAPIEnd");
-             // String recognizedText="test";
+               String recognizedText="test";
 
                // You now have the text in recognizedText var, you can do anything with it.
                // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
@@ -308,14 +310,20 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                }
 
                recognizedText = recognizedText.trim();
-
+/*
                Message msg = new Message();
                msg.obj=recognizedText;
                handler.sendMessage(msg);
                progressDialog.dismiss();
+  */
+               TakeOverInfo takeOverInfo=new TakeOverInfo();
+               takeOverInfo.setMozi(recognizedText);
+               takeOverInfo.setBitmap(bitmap);
+               Intent intent=new Intent(MainActivity.this,Main2Activity.class);
+               intent.putExtra("key", takeOverInfo);
+               startActivity(intent);
            }
        }).start();
-
 
     }
 
