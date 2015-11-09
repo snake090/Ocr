@@ -12,7 +12,9 @@ import java.io.Serializable;
 public class TakeOverInfo implements Serializable {
     private byte[] bytes;
     private String mozi;
-    private boolean kind;
+    private boolean function; //true 辞書
+    private boolean kind;  //true 英語から日本語
+
 
     public void setMozi(String mozi) {
         this.mozi = mozi;
@@ -26,7 +28,14 @@ public class TakeOverInfo implements Serializable {
 
         return kind;
     }
+    public void setFunction(boolean function) {
+        this.function = function;
+    }
 
+    public boolean isFunction() {
+
+        return function;
+    }
     public void setBitmap(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
