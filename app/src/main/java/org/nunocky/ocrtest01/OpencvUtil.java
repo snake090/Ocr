@@ -41,7 +41,7 @@ public class OpencvUtil {
 
         Utils.matToBitmap(mat2, bitmap);
 
-        Log.v(TAG, "OpenCvFinish");
+        Log.i(TAG, "OpenCvFinish");
         return bitmap;
     }
 

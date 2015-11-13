@@ -5,13 +5,20 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.nunocky.ocrtest01.R;
 
 public class Main3Activity extends Activity {
 
     private EditText editText;
+    private Button button;
+    private TextView textView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,10 +26,26 @@ public class Main3Activity extends Activity {
 
         final TakeOverInfo takeOverInfo = (TakeOverInfo) getIntent().getSerializableExtra("key");
         editText = (EditText) findViewById(R.id.editText3);
+        button = (Button) findViewById(R.id.button3);
+        textView=(TextView)findViewById(R.id.textView1);
+
         if (takeOverInfo.getMozi().length() != 0) {
             editText.setText(editText.getText().toString().length() == 0 ? takeOverInfo.getMozi() : editText.getText() + " " + takeOverInfo.getMozi());
             editText.setSelection(editText.getText().toString().length());
         }
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DictionaryConfiguration dictionaryConfiguration = new DictionaryConfiguration(takeOverInfo.isKind());
+                dictionaryConfiguration.setWord(editText.getText().toString());
+
+                Dictionary dictionary=new Dictionary(textView,dictionaryConfiguration);
+
+                dictionary.execute();
+
+
+            }
+        });
     }
 
     @Override

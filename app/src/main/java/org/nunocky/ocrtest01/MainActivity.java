@@ -25,23 +25,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Message;
 import android.os.Handler;
 import android.widget.Spinner;
-
 import com.googlecode.tesseract.android.TessBaseAPI;
-
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
-
 
 public class MainActivity extends Activity implements android.os.Handler.Callback {
     static {
@@ -363,7 +356,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                 OpencvUtil opencvUtil = new OpencvUtil();
 
                 bitmap = opencvUtil.Imageprocessing(bitmap);
-                Log.v(TAG, "TessBaseAPI");
+                Log.i(TAG, "TessBaseAPI");
 /*
                TessBaseAPI baseApi = new TessBaseAPI();
                baseApi.setDebug(true);
@@ -374,7 +367,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
                baseApi.end();
 */
-                Log.v(TAG, "TessBaseAPIEnd");
+                Log.i(TAG, "TessBaseAPIEnd");
                 String recognizedText = "test";
 
                 // You now have the text in recognizedText var, you can do anything with it.
