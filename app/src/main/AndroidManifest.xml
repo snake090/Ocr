@@ -25,10 +25,6 @@
             android:label="@string/title_activity_main2"
             android:screenOrientation="portrait" >
         </activity>
-        <activity
-            android:name=".Main3Activity"
-            android:label="@string/title_activity_main3" >
-        </activity>
     </application>
 
 </manifest>

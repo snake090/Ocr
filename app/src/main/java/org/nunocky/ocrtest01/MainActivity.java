@@ -31,7 +31,9 @@ import android.os.CountDownTimer;
 import android.os.Message;
 import android.os.Handler;
 import android.widget.Spinner;
+
 import com.googlecode.tesseract.android.TessBaseAPI;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -178,28 +180,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        ArrayAdapter<CharSequence> adapter =
-                ArrayAdapter.createFromResource(this, R.array.sample_array,
-                        android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        selectSpinner = (Spinner) findViewById(R.id.spinner);
-        selectSpinner.setAdapter(adapter);
-        selectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Spinner spinner = (Spinner) parent;
-                if (spinner.getSelectedItemPosition() == 0) {
-                    takeOverInfo.setFunction(true);
-                } else {
-                    takeOverInfo.setFunction(false);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
 
     }
 
@@ -391,11 +372,9 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                 takeOverInfo.setMozi(recognizedText);
                 takeOverInfo.setBitmap(bitmap);
                 Intent intent;
-                if(takeOverInfo.isFunction()) {
-                    intent = new Intent(MainActivity.this, Main3Activity.class);
-                }else{
-                    intent = new Intent(MainActivity.this, Main2Activity.class);
-                }
+
+                intent = new Intent(MainActivity.this, Main2Activity.class);
+
                 intent.putExtra("key", takeOverInfo);
                 startActivity(intent);
             }

@@ -8,9 +8,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.memetix.mst.language.Language;
@@ -33,6 +36,7 @@ public class Main2Activity extends Activity {
     private Button button;
     private TextView textView;
     private String ret;
+    private Spinner selectSpinner;
     private static final String TAG = "AndroidOCR.java";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,7 @@ public class Main2Activity extends Activity {
         setContentView(R.layout.activity_main2);
 
         final TakeOverInfo takeOverInfo = (TakeOverInfo) getIntent().getSerializableExtra("key");
-     //   StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
+
         imageView = (ImageView) findViewById(R.id.imageView);
         button = (Button) findViewById(R.id.button2);
         //     imageView.setImageBitmap(takeOverInfo.getBitmap());
@@ -57,45 +61,39 @@ public class Main2Activity extends Activity {
                 DictionaryConfiguration dictionaryConfiguration = new DictionaryConfiguration(takeOverInfo.isKind());
                 dictionaryConfiguration.setWord(editText.getText().toString());
 
-           //     Object content = null;
+                if(takeOverInfo.isFunction()){
+                    Dictionary dictionary=new Dictionary(textView,dictionaryConfiguration);
+                    dictionary.execute();
 
-                TranslateResult translate=new TranslateResult(textView,dictionaryConfiguration);
-
-                translate.execute();
- /*               try {
-
-                    // 英単語1個ならurlエンコードは必要ないが、文のため必要
-
-                    Translate.setClientId("A41410507");
-                    Translate.setClientSecret("RwmuBBxT3M1y7VpHAw0bJrp6zbN9vyemfhrCUtu64qk=");
-                    ret = Translate.execute(dictionaryConfiguration.getWord(), Language.ENGLISH, Language.JAPANESE);
-                    Log.v(TAG, "translate "+ret);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                }else {
+                    TranslateResult translate = new TranslateResult(textView, dictionaryConfiguration);
+                    translate.execute();
                 }
-                textView.setText(ret);
 
 
-                try {
 
-                    // SAXパーサーファクトリを生成
-                    SAXParserFactory spfactory = SAXParserFactory.newInstance();
-                    // SAXパーサーを生成
-                    SAXParser parser = null;
-                    parser = spfactory.newSAXParser();
-                    parser.parse((InputStream)content, new DefaultHandler() {
-                                // charactersメソッドをオーバーライド
-                        public void characters(char[] ch, int offset, int length) {
-                            ret = new String(ch, offset, length);
-                        }
-                    });
-                } catch (Exception e) {
-                    // TODO 自動生成された catch ブロック
-                    e.printStackTrace();
+            }
+        });
+        ArrayAdapter<CharSequence> adapter =
+                ArrayAdapter.createFromResource(this, R.array.sample_array,
+                        android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        selectSpinner = (Spinner) findViewById(R.id.spinner);
+        selectSpinner.setAdapter(adapter);
+        selectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Spinner spinner = (Spinner) parent;
+                if (spinner.getSelectedItemPosition() == 0) {
+                    takeOverInfo.setFunction(true);
+                } else {
+                    takeOverInfo.setFunction(false);
                 }
-                */
+            }
 
-
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
