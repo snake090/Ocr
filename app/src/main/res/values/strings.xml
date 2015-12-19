@@ -16,5 +16,6 @@
         <item>日本語→英語</item>
     </string-array>
     <string name="title_activity_main3">Main3Activity</string>
+    <string name="title_activity_main22">Main22Activity</string>
 
 </resources>

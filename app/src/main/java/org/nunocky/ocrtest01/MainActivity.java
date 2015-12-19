@@ -73,6 +73,8 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
     private static final String TAG = "AndroidOCR.java";
 
     protected Button _button;
+    protected Button _button1;
+    protected Button _button2;
     protected EditText _field;
     protected String _path;
     protected boolean _taken;
@@ -147,7 +149,12 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         _field = (EditText) findViewById(R.id.field);
         _button = (Button) findViewById(R.id.button);
         _button.setOnClickListener(new ButtonClickHandler());
-        iv1 = (ImageView) findViewById(R.id.imageView1);
+        _button1 = (Button) findViewById(R.id.button4);
+        _button1.setOnClickListener(new ButtonClickHandler());
+        _button2=(Button)findViewById(R.id.button5);
+        _button2.setOnClickListener(new ButtonClickHandler());
+
+        //iv1 = (ImageView) findViewById(R.id.imageView1);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("loading");
@@ -195,33 +202,32 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
     public class ButtonClickHandler implements View.OnClickListener {
         public void onClick(View view) {
-            if (!(new File(DATA_PATH + "tessdata/" + lang + ".traineddata")).exists()) {
-                try {
-                    AssetManager assetManager = getAssets();
-                    InputStream in = assetManager.open("tessdata/" + lang + ".traineddata");
-                    //GZIPInputStream gin = new GZIPInputStream(in);
-                    OutputStream out = new FileOutputStream(DATA_PATH
-                            + "tessdata/" + lang + ".traineddata");
 
-                    // Transfer bytes from in to out
-                    byte[] buf = new byte[1024];
-                    int len;
-                    //while ((lenf = gin.read(buff)) > 0) {
-                    while ((len = in.read(buf)) > 0) {
-                        out.write(buf, 0, len);
-                    }
-                    in.close();
-                    //gin.close();
-                    out.close();
-
-                    Log.v(TAG, "Copied " + lang + " traineddata");
-                } catch (IOException e) {
-                    Log.e(TAG, "Was unable to copy " + lang + " traineddata " + e.toString());
-                }
+            switch (view.getId()) {
+                case R.id.button:
+                    OnClickButton();
+                    break;
+                case R.id.button4:
+                    OnClickButton4();
+                    break;
+                case R.id.button5:
+                    OnclickButton5();
             }
-            Log.v(TAG, "Starting Camera app");
-            startCameraActivity();
         }
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+
+
+        if (msg.obj.toString().length() != 0) {
+            // _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
+            //  _field.setSelection(_field.getText().toString().length());
+        }
+        iv1.setImageBitmap(bitmap);
+
+        return false;
+
     }
 
     // Simple android photo capture:
@@ -261,19 +267,6 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         }
     }
 
-    @Override
-    public boolean handleMessage(Message msg) {
-
-
-        if (msg.obj.toString().length() != 0) {
-            // _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
-            //  _field.setSelection(_field.getText().toString().length());
-        }
-        iv1.setImageBitmap(bitmap);
-
-        return false;
-
-    }
 
     protected void onPhotoTaken() {
         _taken = true;
@@ -338,18 +331,24 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
                 bitmap = opencvUtil.Imageprocessing(bitmap);
                 Log.i(TAG, "TessBaseAPI");
-/*
-               TessBaseAPI baseApi = new TessBaseAPI();
-               baseApi.setDebug(true);
-               baseApi.init(DATA_PATH, lang);
-               baseApi.setImage(bitmap);
 
-               String recognizedText = baseApi.getUTF8Text();
+                TessBaseAPI baseApi = new TessBaseAPI();
+                baseApi.setDebug(true);
+                baseApi.init(DATA_PATH, lang);
+                baseApi.setImage(bitmap);
+                int height=bitmap.getHeight() / 3;
+                int width=bitmap.getWidth();
+                Log.v(TAG, Integer.toString(bitmap.getHeight() / 3)+ " " +Integer.toString(bitmap.getWidth())+" "+ Integer.toString(bitmap.getHeight()/3));
+              //  baseApi.setRectangle(1, 1, width - 1, height);
 
-               baseApi.end();
-*/
+
+
+                String recognizedText = baseApi.getUTF8Text();
+
+                baseApi.end();
+
                 Log.i(TAG, "TessBaseAPIEnd");
-                String recognizedText = "test";
+                //   String recognizedText = "test";
 
                 // You now have the text in recognizedText var, you can do anything with it.
                 // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
@@ -380,6 +379,55 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
             }
         }).start();
 
+    }
+
+    private void OnClickButton() {
+        if (!(new File(DATA_PATH + "tessdata/" + lang + ".traineddata")).exists()) {
+            try {
+                AssetManager assetManager = getAssets();
+                InputStream in = assetManager.open("tessdata/" + lang + ".traineddata");
+                //GZIPInputStream gin = new GZIPInputStream(in);
+                OutputStream out = new FileOutputStream(DATA_PATH
+                        + "tessdata/" + lang + ".traineddata");
+
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                //while ((lenf = gin.read(buff)) > 0) {
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                //gin.close();
+                out.close();
+
+                Log.v(TAG, "Copied " + lang + " traineddata");
+            } catch (IOException e) {
+                Log.e(TAG, "Was unable to copy " + lang + " traineddata " + e.toString());
+            }
+        }
+        Log.v(TAG, "Starting Camera app");
+        startCameraActivity();
+    }
+
+    protected void OnClickButton4(){
+        takeOverInfo.setMozi("");
+
+        Intent intent;
+
+        intent = new Intent(MainActivity.this, Main2Activity.class);
+
+        intent.putExtra("key", takeOverInfo);
+        startActivity(intent);
+
+    }
+
+    protected void OnclickButton5(){
+        Intent intent;
+
+        intent=new Intent(MainActivity.this,Main22Activity.class);
+
+        startActivity(intent);
     }
 
 

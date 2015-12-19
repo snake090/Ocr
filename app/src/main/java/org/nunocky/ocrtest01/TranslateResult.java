@@ -1,5 +1,6 @@
 package org.nunocky.ocrtest01;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.TextView;
 
@@ -14,11 +15,13 @@ public class TranslateResult extends AsyncTask<Void,Void,String> {
     private TextView textView;
     private DictionaryConfiguration dictionaryConfiguration;
     private String result;
+    private Context context;
 
-    public TranslateResult(TextView textView, DictionaryConfiguration dictionaryConfiguration) {
+    public TranslateResult(TextView textView, DictionaryConfiguration dictionaryConfiguration,Context context) {
         super();
         this.textView = textView;
         this.dictionaryConfiguration = dictionaryConfiguration;
+        this.context=context;
     }
 
     @Override
@@ -42,6 +45,12 @@ public class TranslateResult extends AsyncTask<Void,Void,String> {
     @Override
     protected void onPostExecute(String result) {
         textView.setText(result);
+        ResearchHistory researchHistory=new ResearchHistory(context);
+        if(dictionaryConfiguration.isKind()) {
+            researchHistory.Insert(1, 0, dictionaryConfiguration.getWord(), result);
+        }else{
+            researchHistory.Insert(1, 1, dictionaryConfiguration.getWord(), result);
+        }
 
     }
 }

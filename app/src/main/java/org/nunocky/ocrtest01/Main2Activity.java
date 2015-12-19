@@ -1,6 +1,11 @@
 package org.nunocky.ocrtest01;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -37,7 +42,14 @@ public class Main2Activity extends Activity {
     private TextView textView;
     private String ret;
     private Spinner selectSpinner;
+    static final String DB = "sqlite_history.db";
+    static final int DB_VERSION = 1;
+    static final String CREATE_TABLE = "create table mytable ( _id integer primary key autoincrement, kind integer not null, research string not null, result string not null  );";
+    static final String DROP_TABLE = "drop table mytable;";
+    static SQLiteDatabase mydb;
+
     private static final String TAG = "AndroidOCR.java";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,13 +73,14 @@ public class Main2Activity extends Activity {
                 DictionaryConfiguration dictionaryConfiguration = new DictionaryConfiguration(takeOverInfo.isKind());
                 dictionaryConfiguration.setWord(editText.getText().toString());
 
-                if(takeOverInfo.isFunction()){
-                    Dictionary dictionary=new Dictionary(textView,dictionaryConfiguration);
+                if (takeOverInfo.isFunction()) {
+                    Dictionary dictionary = new Dictionary(textView, dictionaryConfiguration,getApplicationContext());
                     dictionary.execute();
 
-                }else {
-                    TranslateResult translate = new TranslateResult(textView, dictionaryConfiguration);
+                } else {
+                    TranslateResult translate = new TranslateResult(textView, dictionaryConfiguration,getApplicationContext());
                     translate.execute();
+
                 }
 
 
@@ -98,6 +111,7 @@ public class Main2Activity extends Activity {
         });
 
 
+
     }
 
     @Override
@@ -120,5 +134,20 @@ public class Main2Activity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private static class MySQLiteOpenHelper extends SQLiteOpenHelper {
+        public MySQLiteOpenHelper(Context c) {
+            super(c, DB, null, DB_VERSION);
+        }
+
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL(CREATE_TABLE);
+        }
+
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            db.execSQL(DROP_TABLE);
+            onCreate(db);
+        }
     }
 }

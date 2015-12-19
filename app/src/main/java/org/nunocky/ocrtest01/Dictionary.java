@@ -1,5 +1,6 @@
 package org.nunocky.ocrtest01;
 
+import android.content.Context;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -38,14 +39,16 @@ public class Dictionary extends AsyncTask<Void, Void, String> {
     private DictionaryConfiguration dictionaryConfiguration;
     private String result;
     private String xml;
+    private Context context;
     static final String BR = System.getProperty("line.separator");
     private static final String TAG = "AndroidOCR.java";
 
 
-    public Dictionary(TextView textView, DictionaryConfiguration dictionaryConfiguration) {
+    public Dictionary(TextView textView, DictionaryConfiguration dictionaryConfiguration, Context context) {
         super();
         this.textView = textView;
         this.dictionaryConfiguration = dictionaryConfiguration;
+        this.context = context;
     }
 
     @Override
@@ -85,7 +88,7 @@ public class Dictionary extends AsyncTask<Void, Void, String> {
             XmlPullParser xpp1 = factory1.newPullParser();
             xpp1.setInput(new StringReader(result));
             int eventType1 = xpp1.getEventType();
-            result="";
+            result = "";
             while (eventType1 != XmlPullParser.END_DOCUMENT) {
 /*
                 if (eventType1 == XmlPullParser.START_DOCUMENT) {
@@ -106,10 +109,10 @@ public class Dictionary extends AsyncTask<Void, Void, String> {
                     Log.d("XmlPullParserSample", "Start tag " + xpp1.getName());
                     eventType1 = xpp1.next();
                     if (eventType1 == XmlPullParser.TEXT) {
-                        Log.d("XmlPullParserSample", xpp1.getText()+"Text");
-                        String tmp=xpp1.getText().trim();
-                        if(!"".equals(tmp)){
-                            result+=tmp+BR;
+                        Log.d("XmlPullParserSample", xpp1.getText() + "Text");
+                        String tmp = xpp1.getText().trim();
+                        if (!"".equals(tmp)) {
+                            result += tmp + BR;
                         }
 
                     }
@@ -129,7 +132,13 @@ public class Dictionary extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-            textView.setText(result);
+        textView.setText(result);
+        ResearchHistory researchHistory = new ResearchHistory(context);
+        if(dictionaryConfiguration.isKind()) {
+            researchHistory.Insert(0, 0, dictionaryConfiguration.getWord(), result);
+        }else{
+            researchHistory.Insert(0, 1, dictionaryConfiguration.getWord(), result);
+        }
 
     }
 
@@ -143,5 +152,6 @@ public class Dictionary extends AsyncTask<Void, Void, String> {
         br.close();
         return sb.toString();
     }
+
 
 }
