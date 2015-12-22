@@ -75,6 +75,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
     protected Button _button;
     protected Button _button1;
     protected Button _button2;
+    protected Button _button3;
     protected EditText _field;
     protected String _path;
     protected boolean _taken;
@@ -90,6 +91,10 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
     private Handler handler;
     private Spinner selectSpinner;
     private TakeOverInfo takeOverInfo;
+    private static final int REQUEST_GALLERY = 0;
+    protected Intent imageIntent;
+    private int mFlag = 0;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -110,39 +115,6 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
         }
 
-        // lang.traineddata file with the app (in assets folder)
-        // You can get them at:
-        // http://code.google.com/p/tesseract-ocr/downloads/list
-        // This area needs work and optimization
-        /*
-        if (!(new File(DATA_PATH + "tessdata/" + lang + ".traineddata")).exists()) {
-            try {
-
-                AssetManager assetManager = getAssets();
-                InputStream in = assetManager.open("tessdata/" + lang + ".traineddata");
-                //GZIPInputStream gin = new GZIPInputStream(in);
-                OutputStream out = new FileOutputStream(DATA_PATH
-                        + "tessdata/" + lang + ".traineddata");
-
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                //while ((lenf = gin.read(buff)) > 0) {
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-                in.close();
-                //gin.close();
-                out.close();
-
-                Log.v(TAG, "Copied " + lang + " traineddata");
-            } catch (IOException e) {
-                Log.e(TAG, "Was unable to copy " + lang + " traineddata " + e.toString());
-            }
-        }
-        */
-
-
         setContentView(R.layout.activity_main);
 
         // _image = (ImageView) findViewById(R.id.image);
@@ -151,8 +123,10 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         _button.setOnClickListener(new ButtonClickHandler());
         _button1 = (Button) findViewById(R.id.button4);
         _button1.setOnClickListener(new ButtonClickHandler());
-        _button2=(Button)findViewById(R.id.button5);
+        _button2 = (Button) findViewById(R.id.button5);
         _button2.setOnClickListener(new ButtonClickHandler());
+        _button3 = (Button) findViewById(R.id.button6);
+        _button3.setOnClickListener(new ButtonClickHandler());
 
         //iv1 = (ImageView) findViewById(R.id.imageView1);
 
@@ -162,6 +136,10 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         _path = DATA_PATH + "/ocr.jpg";
         takeOverInfo = new TakeOverInfo();
 
+
+        imageIntent = new Intent();
+        imageIntent.setType("image/*");
+        imageIntent.setAction(Intent.ACTION_GET_CONTENT);
 
         ArrayAdapter<CharSequence> adapter2 =
                 ArrayAdapter.createFromResource(this, R.array.sample_array2,
@@ -212,6 +190,9 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                     break;
                 case R.id.button5:
                     OnclickButton5();
+                    break;
+                case R.id.button6:
+                    OnclickButton6();
             }
         }
     }
@@ -247,10 +228,23 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "resultCode: " + resultCode);
 
-        if (resultCode == -1) {
+        if (mFlag == 0) {
+            InputStream in = null;
+            try {
+                in = getContentResolver().openInputStream(data.getData());
+                bitmap = BitmapFactory.decodeStream(in);
+                in.close();
+            } catch (Exception e) {
+
+            }
             onPhotoTaken();
+
         } else {
-            Log.v(TAG, "User cancelled");
+            if (resultCode == -1) {
+                onPhotoTaken();
+            } else {
+                Log.v(TAG, "User cancelled");
+            }
         }
     }
 
@@ -275,11 +269,11 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         progressDialog.show();
         new Thread(new Runnable() {
             public void run() {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 4;
-
-                bitmap = BitmapFactory.decodeFile(_path, options);
-
+                if (mFlag != 0) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 4;
+                    bitmap = BitmapFactory.decodeFile(_path, options);
+                }
 
                 try {
                     ExifInterface exif = new ExifInterface(_path);
@@ -336,11 +330,10 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                 baseApi.setDebug(true);
                 baseApi.init(DATA_PATH, lang);
                 baseApi.setImage(bitmap);
-                int height=bitmap.getHeight() / 3;
-                int width=bitmap.getWidth();
-                Log.v(TAG, Integer.toString(bitmap.getHeight() / 3)+ " " +Integer.toString(bitmap.getWidth())+" "+ Integer.toString(bitmap.getHeight()/3));
-              //  baseApi.setRectangle(1, 1, width - 1, height);
-
+                int height = bitmap.getHeight() / 3;
+                int width = bitmap.getWidth();
+                Log.v(TAG, Integer.toString(bitmap.getHeight() / 3) + " " + Integer.toString(bitmap.getWidth()) + " " + Integer.toString(bitmap.getHeight() / 3));
+                //  baseApi.setRectangle(1, 1, width - 1, height);
 
 
                 String recognizedText = baseApi.getUTF8Text();
@@ -410,7 +403,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         startCameraActivity();
     }
 
-    protected void OnClickButton4(){
+    protected void OnClickButton4() {
         takeOverInfo.setMozi("");
 
         Intent intent;
@@ -422,12 +415,18 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
     }
 
-    protected void OnclickButton5(){
+    protected void OnclickButton5() {
         Intent intent;
 
-        intent=new Intent(MainActivity.this,Main22Activity.class);
+        intent = new Intent(MainActivity.this, Main22Activity.class);
 
         startActivity(intent);
+    }
+
+    protected void OnclickButton6() {
+        mFlag = 0;
+        startActivityForResult(imageIntent, REQUEST_GALLERY);
+
     }
 
 
