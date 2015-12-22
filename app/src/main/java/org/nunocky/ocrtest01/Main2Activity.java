@@ -54,7 +54,6 @@ public class Main2Activity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-
         final TakeOverInfo takeOverInfo = (TakeOverInfo) getIntent().getSerializableExtra("key");
 
         imageView = (ImageView) findViewById(R.id.imageView);

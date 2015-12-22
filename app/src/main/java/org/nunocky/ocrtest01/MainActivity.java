@@ -323,7 +323,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                 // _image.setImageBitmap( bitmap );
                 OpencvUtil opencvUtil = new OpencvUtil();
 
-                bitmap = opencvUtil.Imageprocessing(bitmap);
+              //  bitmap = opencvUtil.Imageprocessing(bitmap);
                 Log.i(TAG, "TessBaseAPI");
 
                 TessBaseAPI baseApi = new TessBaseAPI();
@@ -365,7 +365,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                 takeOverInfo.setBitmap(bitmap);
                 Intent intent;
 
-                intent = new Intent(MainActivity.this, Main2Activity.class);
+                intent = new Intent(MainActivity.this, Main23Activity.class);
 
                 intent.putExtra("key", takeOverInfo);
                 startActivity(intent);
