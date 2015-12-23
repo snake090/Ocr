@@ -38,7 +38,7 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
-public class MainActivity extends Activity implements android.os.Handler.Callback {
+public class MainActivity extends Activity  {
     static {
         if (!OpenCVLoader.initDebug()) {
             Log.d("TAG", "Filed OpenCVLoader.initDebug()");
@@ -61,7 +61,6 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         }
     };
 
-    public static final String PACKAGE_NAME = "com.datumdroid.android.ocr.simple";
     public static final String DATA_PATH = Environment
             .getExternalStorageDirectory().toString() + "/SimpleAndroidOCR/";
 
@@ -87,7 +86,6 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
     private ImageView iv1;
 
     private ProgressDialog progressDialog;
-    private Thread thread;
     private Handler handler;
     private Spinner selectSpinner;
     private TakeOverInfo takeOverInfo;
@@ -155,9 +153,13 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                 if (spinner.getSelectedItemPosition() == 0) {
                     takeOverInfo.setKind(true);
                     lang = "eng";
+
+                    takeOverInfo.setLang("eng");
                 } else {
                     takeOverInfo.setKind(false);
                     lang = "jpn";
+
+                    takeOverInfo.setLang("jpn");
                 }
             }
 
@@ -197,22 +199,9 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
         }
     }
 
-    @Override
-    public boolean handleMessage(Message msg) {
 
 
-        if (msg.obj.toString().length() != 0) {
-            // _field.setText(_field.getText().toString().length() == 0 ? msg.obj.toString() : _field.getText() + " " +msg.obj.toString());
-            //  _field.setSelection(_field.getText().toString().length());
-        }
-        iv1.setImageBitmap(bitmap);
 
-        return false;
-
-    }
-
-    // Simple android photo capture:
-    // http://labs.makemachine.net/2010/03/simple-android-photo-capture/
 
     protected void startCameraActivity() {
         File file = new File(_path);
@@ -264,8 +253,6 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
 
     protected void onPhotoTaken() {
         _taken = true;
-        handler = new Handler(MainActivity.this);
-
         progressDialog.show();
         new Thread(new Runnable() {
             public void run() {
@@ -323,45 +310,9 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                 // _image.setImageBitmap( bitmap );
                 OpencvUtil opencvUtil = new OpencvUtil();
 
-              //  bitmap = opencvUtil.Imageprocessing(bitmap);
+                bitmap = opencvUtil.Imageprocessing(bitmap);
                 Log.i(TAG, "TessBaseAPI");
 
-                TessBaseAPI baseApi = new TessBaseAPI();
-                baseApi.setDebug(true);
-                baseApi.init(DATA_PATH, lang);
-                baseApi.setImage(bitmap);
-                int height = bitmap.getHeight() / 3;
-                int width = bitmap.getWidth();
-                Log.v(TAG, Integer.toString(bitmap.getHeight() / 3) + " " + Integer.toString(bitmap.getWidth()) + " " + Integer.toString(bitmap.getHeight() / 3));
-                //  baseApi.setRectangle(1, 1, width - 1, height);
-
-
-                String recognizedText = baseApi.getUTF8Text();
-
-                baseApi.end();
-
-                Log.i(TAG, "TessBaseAPIEnd");
-                //   String recognizedText = "test";
-
-                // You now have the text in recognizedText var, you can do anything with it.
-                // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
-                // so that garbage doesn't make it to the display.
-
-                Log.v(TAG, "OCRED TEXT: " + recognizedText);
-
-                if (lang.equalsIgnoreCase("eng")) {
-                    recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
-                }
-
-                recognizedText = recognizedText.trim();
-/*
-               Message msg = new Message();
-               msg.obj=recognizedText;
-               handler.sendMessage(msg);
-               progressDialog.dismiss();
-  */
-
-                takeOverInfo.setMozi(recognizedText);
                 takeOverInfo.setBitmap(bitmap);
                 Intent intent;
 
@@ -370,7 +321,7 @@ public class MainActivity extends Activity implements android.os.Handler.Callbac
                 intent.putExtra("key", takeOverInfo);
                 startActivity(intent);
             }
-        }).start();
+      }).start();
 
     }
 

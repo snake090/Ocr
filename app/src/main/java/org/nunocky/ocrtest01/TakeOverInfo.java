@@ -14,6 +14,8 @@ public class TakeOverInfo implements Serializable {
     private String mozi;
     private boolean function; //true 辞書
     private boolean kind;  //true 英語から日本語
+    private String lang;
+
 
 
     public void setMozi(String mozi) {
@@ -50,5 +52,13 @@ public class TakeOverInfo implements Serializable {
     public Bitmap getBitmap() {
 
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
     }
 }
