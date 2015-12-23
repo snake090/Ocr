@@ -52,7 +52,7 @@ public class Main23Activity extends AppCompatActivity {
     public static final String DATA_PATH = Environment
             .getExternalStorageDirectory().toString() + "/SimpleAndroidOCR/";
 
-    public String lang = "eng";
+
 
     /**
      * アプリの初期化
@@ -129,11 +129,12 @@ public class Main23Activity extends AppCompatActivity {
     }
 
     protected void onPhotoTaken() {
-/*        progressDialog.show();
+        progressDialog.show();
         new Thread(new Runnable() {
-            public void run() {*/
-
+            public void run() {
+/*
         try {
+
             ExifInterface exif = new ExifInterface(_path);
             int exifOrientation = exif.getAttributeInt(
                     ExifInterface.TAG_ORIENTATION,
@@ -174,9 +175,11 @@ public class Main23Activity extends AppCompatActivity {
             // Convert to ARGB_8888, required by tess
             bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
 
+
         } catch (IOException e) {
             Log.e(TAG, "Couldn't correct orientation: " + e.toString());
         }
+        */
         TessBaseAPI baseApi = new TessBaseAPI();
         if (view.getFlag()) {
             OpencvUtil opencvUtil = new OpencvUtil();
@@ -207,7 +210,7 @@ public class Main23Activity extends AppCompatActivity {
 
         Log.v(TAG, "OCRED TEXT: " + recognizedText);
 
-        if (lang.equalsIgnoreCase("eng")) {
+        if (takeOverInfo.getLang().equalsIgnoreCase("eng")) {
             recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
         }
 
@@ -222,8 +225,8 @@ public class Main23Activity extends AppCompatActivity {
         intent.putExtra("key", takeOverInfo);
         startActivity(intent);
     }
-    //  }).start();
-    // }
+      }).start();
+     }
 }
 
 class DrawNoteView extends android.view.View {
