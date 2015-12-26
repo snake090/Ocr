@@ -306,9 +306,7 @@ class DrawNoteView extends android.view.View {
 
     }
 
-    /**
-     * タッチイベント
-     */
+
     public boolean onTouchEvent(MotionEvent event) {
 
         int x = (int) event.getX();

@@ -254,9 +254,9 @@ public class MainActivity extends Activity  {
 
     protected void onPhotoTaken() {
         _taken = true;
-       // progressDialog.show();
-        //new Thread(new Runnable() {
-        //    public void run() {
+        progressDialog.show();
+        new Thread(new Runnable() {
+            public void run() {
                 if (mFlag == 0) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inSampleSize = 4;
@@ -322,9 +322,9 @@ public class MainActivity extends Activity  {
                 intent.putExtra("key", takeOverInfo);
                 startActivity(intent);
             }
-     // }).start();
+      }).start();
 
-    //}
+    }
 
     private void OnClickButton() {
         if (!(new File(DATA_PATH + "tessdata/" + lang + ".traineddata")).exists()) {
