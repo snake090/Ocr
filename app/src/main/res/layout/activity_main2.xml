@@ -30,19 +30,18 @@
             android:layout_toEndOf="@+id/scrollView2" />
     </ScrollView>
 
-    <Button
+    <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="検索"
-        android:id="@+id/button2"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/spinner"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true" />
 
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView5"
-        android:layout_below="@+id/button2"
+        android:layout_below="@+id/spinner"
         android:layout_alignParentStart="true">
 
         <TextView
@@ -51,15 +50,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
 
             android:id="@+id/textView"
-            android:layout_toEndOf="@+id/scrollView2"
-            android:layout_below="@+id/scrollView5" />
+            android:layout_below="@+id/spinner"
+            android:layout_alignParentStart="true" />
     </ScrollView>
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner"
-        android:layout_alignTop="@+id/button2"
-        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

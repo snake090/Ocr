@@ -1,47 +1,28 @@
 package org.nunocky.ocrtest01;
 
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.memetix.mst.language.Language;
-import com.memetix.mst.translate.Translate;
-
-import org.xml.sax.helpers.DefaultHandler;
-
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-public class Main2Activity extends Activity {
+public class Main2Activity extends AppCompatActivity {
 
     private EditText editText;
-    private ImageView imageView;
-    private Button button;
     private TextView textView;
-    private String ret;
     private Spinner selectSpinner;
+    private static final int MENU_RESEARCH = 0;
+    private static final int MENU_MENU = 1;
+    private TakeOverInfo takeOverInfo;
     static final String DB = "sqlite_history.db";
     static final int DB_VERSION = 1;
     static final String CREATE_TABLE = "create table mytable ( _id integer primary key autoincrement, kind integer not null, research string not null, result string not null  );";
@@ -54,11 +35,8 @@ public class Main2Activity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        final TakeOverInfo takeOverInfo = (TakeOverInfo) getIntent().getSerializableExtra("key");
-
-        imageView = (ImageView) findViewById(R.id.imageView);
-        button = (Button) findViewById(R.id.button2);
-        //     imageView.setImageBitmap(takeOverInfo.getBitmap());
+        setTitle("検索");
+        takeOverInfo = (TakeOverInfo) getIntent().getSerializableExtra("key");
         editText = (EditText) findViewById(R.id.editText2);
         textView = (TextView) findViewById(R.id.textView);
         if (takeOverInfo.getMozi().length() != 0) {
@@ -66,26 +44,6 @@ public class Main2Activity extends Activity {
             editText.setSelection(editText.getText().toString().length());
         }
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DictionaryConfiguration dictionaryConfiguration = new DictionaryConfiguration(takeOverInfo.isKind());
-                dictionaryConfiguration.setWord(editText.getText().toString());
-
-                if (takeOverInfo.isFunction()) {
-                    Dictionary dictionary = new Dictionary(textView, dictionaryConfiguration,getApplicationContext());
-                    dictionary.execute();
-
-                } else {
-                    TranslateResult translate = new TranslateResult(textView, dictionaryConfiguration,getApplicationContext());
-                    translate.execute();
-
-                }
-
-
-
-            }
-        });
         ArrayAdapter<CharSequence> adapter =
                 ArrayAdapter.createFromResource(this, R.array.sample_array,
                         android.R.layout.simple_spinner_item);
@@ -115,24 +73,40 @@ public class Main2Activity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main2, menu);
+
+        super.onCreateOptionsMenu(menu);
+        menu.add(0, MENU_RESEARCH, 0, "検索");
+        menu.add(0, MENU_MENU, 0, "メニュー画面に戻る");
         return true;
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case MENU_RESEARCH:
+                DictionaryConfiguration dictionaryConfiguration = new DictionaryConfiguration(takeOverInfo.isKind());
+                dictionaryConfiguration.setWord(editText.getText().toString());
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+                if (takeOverInfo.isFunction()) {
+                    Dictionary dictionary = new Dictionary(textView, dictionaryConfiguration,getApplicationContext());
+                    dictionary.execute();
+
+                } else {
+                    TranslateResult translate = new TranslateResult(textView, dictionaryConfiguration,getApplicationContext());
+                    translate.execute();
+
+                }
+                break;
+            case MENU_MENU:
+                Intent intent;
+
+                intent = new Intent(Main2Activity.this, MainActivity.class);
+
+                startActivity(intent);
+                break;
         }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     private static class MySQLiteOpenHelper extends SQLiteOpenHelper {

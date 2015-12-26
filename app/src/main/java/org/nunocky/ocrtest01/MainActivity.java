@@ -115,8 +115,6 @@ public class MainActivity extends Activity  {
 
         setContentView(R.layout.activity_main);
 
-        // _image = (ImageView) findViewById(R.id.image);
-        _field = (EditText) findViewById(R.id.field);
         _button = (Button) findViewById(R.id.button);
         _button.setOnClickListener(new ButtonClickHandler());
         _button1 = (Button) findViewById(R.id.button4);
@@ -217,16 +215,19 @@ public class MainActivity extends Activity  {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "resultCode: " + resultCode);
 
-        if (mFlag == 0) {
+        if (mFlag == 1) {
             InputStream in = null;
             try {
                 in = getContentResolver().openInputStream(data.getData());
                 bitmap = BitmapFactory.decodeStream(in);
                 in.close();
             } catch (Exception e) {
-
+                Log.v(TAG,"bitmapSelectError");
+                mFlag=0;
             }
-            onPhotoTaken();
+            if(mFlag!=0) {
+                onPhotoTaken();
+            }
 
         } else {
             if (resultCode == -1) {
@@ -253,60 +254,60 @@ public class MainActivity extends Activity  {
 
     protected void onPhotoTaken() {
         _taken = true;
-        progressDialog.show();
-        new Thread(new Runnable() {
-            public void run() {
-                if (mFlag != 0) {
+       // progressDialog.show();
+        //new Thread(new Runnable() {
+        //    public void run() {
+                if (mFlag == 0) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inSampleSize = 4;
                     bitmap = BitmapFactory.decodeFile(_path, options);
-                }
 
-                try {
-                    ExifInterface exif = new ExifInterface(_path);
-                    int exifOrientation = exif.getAttributeInt(
-                            ExifInterface.TAG_ORIENTATION,
-                            ExifInterface.ORIENTATION_NORMAL);
 
-                    Log.v(TAG, "Orient: " + exifOrientation);
+                    try {
+                        ExifInterface exif = new ExifInterface(_path);
+                        int exifOrientation = exif.getAttributeInt(
+                                ExifInterface.TAG_ORIENTATION,
+                                ExifInterface.ORIENTATION_NORMAL);
 
-                    int rotate = 0;
+                        Log.v(TAG, "Orient: " + exifOrientation);
 
-                    switch (exifOrientation) {
-                        case ExifInterface.ORIENTATION_ROTATE_90:
-                            rotate = 90;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_180:
-                            rotate = 180;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_270:
-                            rotate = 270;
-                            break;
+                        int rotate = 0;
+
+                        switch (exifOrientation) {
+                            case ExifInterface.ORIENTATION_ROTATE_90:
+                                rotate = 90;
+                                break;
+                            case ExifInterface.ORIENTATION_ROTATE_180:
+                                rotate = 180;
+                                break;
+                            case ExifInterface.ORIENTATION_ROTATE_270:
+                                rotate = 270;
+                                break;
+                        }
+
+                        Log.v(TAG, "Rotation: " + rotate);
+
+                        if (rotate != 0) {
+
+                            // Getting width & height of the given image.
+                            int w = bitmap.getWidth();
+                            int h = bitmap.getHeight();
+
+                            // Setting pre rotate
+                            Matrix mtx = new Matrix();
+                            mtx.preRotate(rotate);
+
+                            // Rotating Bitmap
+                            bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
+                        }
+
+                        // Convert to ARGB_8888, required by tess
+                        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+                    } catch (IOException e) {
+                        Log.e(TAG, "Couldn't correct orientation: " + e.toString());
                     }
-
-                    Log.v(TAG, "Rotation: " + rotate);
-
-                    if (rotate != 0) {
-
-                        // Getting width & height of the given image.
-                        int w = bitmap.getWidth();
-                        int h = bitmap.getHeight();
-
-                        // Setting pre rotate
-                        Matrix mtx = new Matrix();
-                        mtx.preRotate(rotate);
-
-                        // Rotating Bitmap
-                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
-                    }
-
-                    // Convert to ARGB_8888, required by tess
-                    bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-
-                } catch (IOException e) {
-                    Log.e(TAG, "Couldn't correct orientation: " + e.toString());
                 }
-
                 // _image.setImageBitmap( bitmap );
                 OpencvUtil opencvUtil = new OpencvUtil();
 
@@ -321,9 +322,9 @@ public class MainActivity extends Activity  {
                 intent.putExtra("key", takeOverInfo);
                 startActivity(intent);
             }
-      }).start();
+     // }).start();
 
-    }
+    //}
 
     private void OnClickButton() {
         if (!(new File(DATA_PATH + "tessdata/" + lang + ".traineddata")).exists()) {
@@ -375,7 +376,7 @@ public class MainActivity extends Activity  {
     }
 
     protected void OnclickButton6() {
-        mFlag = 0;
+        mFlag = 1;
         startActivityForResult(imageIntent, REQUEST_GALLERY);
 
     }

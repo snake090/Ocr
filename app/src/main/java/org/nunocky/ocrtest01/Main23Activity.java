@@ -53,10 +53,6 @@ public class Main23Activity extends AppCompatActivity {
             .getExternalStorageDirectory().toString() + "/SimpleAndroidOCR/";
 
 
-
-    /**
-     * アプリの初期化
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -77,6 +73,7 @@ public class Main23Activity extends AppCompatActivity {
 
         }
         setContentView(R.layout.activity_main23);
+        setTitle("検索範囲を囲って下さい");
         takeOverInfo = (TakeOverInfo) getIntent().getSerializableExtra("key");
         Flag = 0;
         progressDialog = new ProgressDialog(this);
