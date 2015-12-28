@@ -34,7 +34,7 @@ public class Main22Activity extends Activity {
         setContentView(R.layout.activity_main22);
 
         researchHistory=new ResearchHistory(getApplicationContext());
-        cursor=researchHistory.Query("SELECT * FROM mytable");
+        cursor=researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '0' ORDER BY time ASC");
         from = new String[]{"research", "result"};
         to = new int[]{R.id.research, R.id.result};
         while(cursor.moveToNext()) {
@@ -43,6 +43,7 @@ public class Main22Activity extends Activity {
             Log.v("tama","type"+ cursor.getString(cursor.getColumnIndex("type")));
             Log.v("tama", "research"+cursor.getString(cursor.getColumnIndex("research")));
             Log.v("tama", "result"+cursor.getString(cursor.getColumnIndex("result")));
+            Log.v("tama", "time"+cursor.getString(cursor.getColumnIndex("time")));
         }
         myadapter = new SimpleCursorAdapter(this, R.layout.list, cursor, from, to,0);
         listview = (ListView) findViewById(R.id.listView);
@@ -63,11 +64,14 @@ public class Main22Activity extends Activity {
                 Spinner spinner = (Spinner) parent;
                 if (spinner.getSelectedItemPosition() == 0) {
                     if (type) {
-                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '0'");
+                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '0' ORDER BY time DESC");
+
                         myadapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list, cursor, from, to, 0);
+
                         listview.setAdapter(myadapter);
+
                     } else {
-                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '1'");
+                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '1' ORDER BY time DESC");
                         myadapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list, cursor, from, to, 0);
                         listview.setAdapter(myadapter);
                     }
@@ -75,11 +79,11 @@ public class Main22Activity extends Activity {
 
                 } else {
                     if (type) {
-                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '1' AND type = '0'");
+                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '1' AND type = '0' ORDER BY time DESC");
                         myadapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list, cursor, from, to, 0);
                         listview.setAdapter(myadapter);
                     } else {
-                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '1' AND type = '0'");
+                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '1' AND type = '0' ORDER BY time DESC");
                         myadapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list, cursor, from, to, 0);
                         listview.setAdapter(myadapter);
                     }
@@ -105,11 +109,11 @@ public class Main22Activity extends Activity {
                 Spinner spinner = (Spinner) parent;
                 if (spinner.getSelectedItemPosition() == 0) {
                     if (kind) {
-                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '0'");
+                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '0' ORDER BY time DESC");
                         myadapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list, cursor, from, to, 0);
                         listview.setAdapter(myadapter);
                     } else {
-                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '1' AND type = '0'");
+                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '1' AND type = '0' ORDER BY time DESC");
                         myadapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list, cursor, from, to, 0);
                         listview.setAdapter(myadapter);
                     }
@@ -117,11 +121,11 @@ public class Main22Activity extends Activity {
 
                 } else {
                     if (kind) {
-                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '1'");
+                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '1' ORDER BY time DESC");
                         myadapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list, cursor, from, to, 0);
                         listview.setAdapter(myadapter);
                     } else {
-                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '1' AND type = '1'");
+                        Cursor cursor = researchHistory.Query("SELECT * FROM mytable WHERE kind = '1' AND type = '1' ORDER BY time DESC");
                         myadapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list, cursor, from, to, 0);
                         listview.setAdapter(myadapter);
                     }
