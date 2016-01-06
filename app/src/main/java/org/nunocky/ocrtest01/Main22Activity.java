@@ -1,10 +1,8 @@
 package org.nunocky.ocrtest01;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,9 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
-
-import org.nunocky.ocrtest01.R;
 
 public class Main22Activity extends Activity {
 
@@ -37,14 +32,6 @@ public class Main22Activity extends Activity {
         cursor=researchHistory.Query("SELECT * FROM mytable WHERE kind = '0' AND type = '0' ORDER BY time ASC");
         from = new String[]{"research", "result"};
         to = new int[]{R.id.research, R.id.result};
-        while(cursor.moveToNext()) {
-            Log.v("tama","id"+ cursor.getString(cursor.getColumnIndex("_id")));
-            Log.v("tama","kind"+ cursor.getString(cursor.getColumnIndex("kind")));
-            Log.v("tama","type"+ cursor.getString(cursor.getColumnIndex("type")));
-            Log.v("tama", "research"+cursor.getString(cursor.getColumnIndex("research")));
-            Log.v("tama", "result"+cursor.getString(cursor.getColumnIndex("result")));
-            Log.v("tama", "time"+cursor.getString(cursor.getColumnIndex("time")));
-        }
         myadapter = new SimpleCursorAdapter(this, R.layout.list, cursor, from, to,0);
         listview = (ListView) findViewById(R.id.listView);
         listview.setAdapter(myadapter);

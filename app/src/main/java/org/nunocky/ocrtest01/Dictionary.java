@@ -53,7 +53,6 @@ public class Dictionary extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... value) {
-        Object content = null;
 
         try {
             Log.d(TAG, dictionaryConfiguration.getUrl());
@@ -90,21 +89,6 @@ public class Dictionary extends AsyncTask<Void, Void, String> {
             int eventType1 = xpp1.getEventType();
             result = "";
             while (eventType1 != XmlPullParser.END_DOCUMENT) {
-/*
-                if (eventType1 == XmlPullParser.START_DOCUMENT) {
-                    Log.d("XmlPullParserSample", "Start document");
-                } else if (eventType1 == XmlPullParser.END_DOCUMENT) {
-                    Log.d("XmlPullParserSample", "End document");
-                } else if (eventType1 == XmlPullParser.START_TAG) {
-                    Log.d("XmlPullParserSample", "Start tag " + xpp1.getName());
-                 //   Log.d("XmlPullParserSample", xpp1.nextText()+"Text");
-                } else if (eventType1 == XmlPullParser.END_TAG) {
-                    Log.d("XmlPullParserSample", "End tag " + xpp1.getName());
-                } else if (eventType1 == XmlPullParser.TEXT) {
-                    Log.d("XmlPullParserSample", xpp1.getText()+"Text");
-
-                }
-*/
                 if (eventType1 == XmlPullParser.START_TAG) {
                     Log.d("XmlPullParserSample", "Start tag " + xpp1.getName());
                     eventType1 = xpp1.next();

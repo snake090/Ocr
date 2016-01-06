@@ -1,41 +1,26 @@
 package org.nunocky.ocrtest01;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.media.ExifInterface;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
-import org.nunocky.ocrtest01.R;
-import org.opencv.imgproc.Imgproc;
-
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 public class Main23Activity extends AppCompatActivity {
@@ -129,54 +114,6 @@ public class Main23Activity extends AppCompatActivity {
         progressDialog.show();
         new Thread(new Runnable() {
             public void run() {
-/*
-        try {
-
-            ExifInterface exif = new ExifInterface(_path);
-            int exifOrientation = exif.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL);
-
-            Log.v(TAG, "Orient: " + exifOrientation);
-
-            int rotate = 0;
-
-            switch (exifOrientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    rotate = 90;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotate = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotate = 270;
-                    break;
-            }
-
-            Log.v(TAG, "Rotation: " + rotate);
-
-            if (rotate != 0) {
-
-                // Getting width & height of the given image.
-                int w = bitmap.getWidth();
-                int h = bitmap.getHeight();
-
-                // Setting pre rotate
-                Matrix mtx = new Matrix();
-                mtx.preRotate(rotate);
-
-                // Rotating Bitmap
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
-            }
-
-            // Convert to ARGB_8888, required by tess
-            bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-
-
-        } catch (IOException e) {
-            Log.e(TAG, "Couldn't correct orientation: " + e.toString());
-        }
-        */
         TessBaseAPI baseApi = new TessBaseAPI();
         if (view.getFlag()) {
             OpencvUtil opencvUtil = new OpencvUtil();

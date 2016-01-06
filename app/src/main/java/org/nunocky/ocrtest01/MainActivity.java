@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-//import java.util.logging.Handler;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -24,15 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.app.ProgressDialog;
-import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Message;
-import android.os.Handler;
 import android.widget.Spinner;
-
-import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -64,9 +55,6 @@ public class MainActivity extends Activity  {
     public static final String DATA_PATH = Environment
             .getExternalStorageDirectory().toString() + "/SimpleAndroidOCR/";
 
-    // You should have the trained data file in assets folder
-    // You can get them at:
-    // http://code.google.com/p/tesseract-ocr/downloads/list
     public String lang = "eng";
 
     private static final String TAG = "AndroidOCR.java";
@@ -81,12 +69,7 @@ public class MainActivity extends Activity  {
     protected Bitmap bitmap;
 
     protected static final String PHOTO_TAKEN = "photo_taken";
-
-    private ImageView iv;
-    private ImageView iv1;
-
     private ProgressDialog progressDialog;
-    private Handler handler;
     private Spinner selectSpinner;
     private TakeOverInfo takeOverInfo;
     private static final int REQUEST_GALLERY = 0;
@@ -123,8 +106,6 @@ public class MainActivity extends Activity  {
         _button2.setOnClickListener(new ButtonClickHandler());
         _button3 = (Button) findViewById(R.id.button6);
         _button3.setOnClickListener(new ButtonClickHandler());
-
-        //iv1 = (ImageView) findViewById(R.id.imageView1);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("loading");

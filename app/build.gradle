@@ -6,7 +6,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.example.owner.ocrtest"
+        applicationId "org.nunocky.ocrtest01"
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1

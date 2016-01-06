@@ -27,9 +27,6 @@ public class Main2Activity extends AppCompatActivity {
     static final int DB_VERSION = 1;
     static final String CREATE_TABLE = "create table mytable ( _id integer primary key autoincrement, kind integer not null, research string not null, result string not null  );";
     static final String DROP_TABLE = "drop table mytable;";
-    static SQLiteDatabase mydb;
-
-    private static final String TAG = "AndroidOCR.java";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

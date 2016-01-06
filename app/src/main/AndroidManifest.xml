@@ -27,11 +27,15 @@
         </activity>
         <activity
             android:name=".Main22Activity"
-            android:label="@string/title_activity_main22" >
+            android:label="@string/title_activity_main22"
+            android:screenOrientation="portrait"
+            >
         </activity>
         <activity
             android:name=".Main23Activity"
-            android:label="@string/title_activity_main23" >
+            android:label="@string/title_activity_main23"
+            android:screenOrientation="portrait"
+            >
         </activity>
     </application>
 
